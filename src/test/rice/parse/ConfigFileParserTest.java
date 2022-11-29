@@ -1,5 +1,4 @@
 package test.rice.parse;
-
 import main.rice.node.*;
 import main.rice.obj.*;
 import main.rice.parse.*;
