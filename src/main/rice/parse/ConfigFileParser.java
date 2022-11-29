@@ -225,33 +225,27 @@ public class ConfigFileParser{
             try {
                 String[] temp = dom.substring(1, dom.length() - 1).split(", ");
                 for (String elem : temp) {
-//                    if (intVal(dom)){
-                    System.out.println(elem);
-                    int intElem = Integer.parseInt(elem);
-                        //float floatElem = Float.parseFloat(elem);
-                    domList.add(intElem);
+                    Number num;
+                    if (typesNodes instanceof PyFloatNode){
+                        try{
+                            num = Double.parseDouble(elem.strip());
+                        }
+                        catch(Exception e){
+                            throw new InvalidConfigException("invalid syntax!");
+                        }
                     }
-//                    else if (floatVal(dom)){
-//                        float floatElem = Float.parseFloat(elem);
-//                        domList.add(floatElem);
-//                    }
+                    else {
+                        try{
+                            num = Integer.parseInt(elem.strip());
+                    }
+                    catch(Exception e){
+                        throw new InvalidConfigException("invalid syntax!");
+                    }
 
-                    //domList.add(floatElem);
-//                }
-//                if (intVal(dom)){
-//                    String[] temp = dom.substring(1, dom.length() - 1).split(", ");
-//                    for (String elem : temp) {
-//                        int intElem = Integer.parseInt(elem);
-//                        domList.add(intElem);
-//                    }
-//                }
-//                else if (floatVal(dom)){
-//                    String[] temp = dom.substring(1, dom.length() - 1).split(", ");
-//                    for (String elem : temp) {
-//                        float floatElem = Float.parseFloat(elem);
-//                        domList.add(floatElem);
-//                    }
-//                }
+                    }
+                    domList.add(num);
+                    }
+
             }
             catch (Exception e) {
                 throw new InvalidConfigException("invalid domain syntax");
@@ -260,13 +254,6 @@ public class ConfigFileParser{
         else {
             domList.add(Integer.parseInt(dom));
         }
-//            if (intVal(dom)){
-//                domList.add(Integer.parseInt(dom));
-//            }
-//            else if (floatVal(dom)){
-//                domList.add(Float.parseFloat(dom));
-//            }
-//        }
         return domList;
     }
 
@@ -304,81 +291,6 @@ public class ConfigFileParser{
         }
         return false;
     }
-
-    /**
-     * Helper function for simpleType, checks if it's a valid <intDom>
-     * @param domain current string domain
-     * @return true if domain is a valid <intDom>
-     * @throws InvalidConfigException if domain is invalid
-     */
-    private boolean intDom(String domain) throws InvalidConfigException{
-        //<intDom> ::= <intVal> "~" <intVal>| <intArray>
-        if (domain.contains("~")){
-            int tildeIndex = domain.indexOf("~");
-            if (intVal(domain.substring(0, tildeIndex)) && intVal(domain.substring(tildeIndex + 1))){
-                return true;
-            }
-            else {
-                throw new InvalidConfigException("invalid integer exhaustive domain");
-            }
-            }
-        else if (numArray(domain, "int")){
-            return true;
-        }
-        else {
-            throw new InvalidConfigException("invalid integer exhaustive domain");
-        }
-    }
-
-    /**
-     * Helper function for simpleType, checks if it's a valid <floatDom>
-     * @param domain current string domain
-     * @return true if domain is a valid <floatDom>
-     * @throws InvalidConfigException if domain is invalid
-     */
-    private boolean floatDom(String domain) throws InvalidConfigException{
-        //<floatDom>::= <intVal> "~" <intVal> | <numArray>
-        if (domain.contains("~")){
-            int tildeIndex = domain.indexOf("~");
-            if (floatVal(domain.substring(0, tildeIndex)) && floatVal(domain.substring(tildeIndex + 1))){
-                return true;
-            }
-            else {
-                throw new InvalidConfigException("invalid float exhaustive domain");
-            }
-        }
-        else if (numArray(domain, "float")){
-            return true;
-        }
-        else {
-            throw new InvalidConfigException("invalid float exhaustive domain");
-        }
-    }
-    /**
-     * Helper function for simpleType, checks if it's a valid <boolDom>
-     * @param domain current string domain
-     * @return true if domain is a valid <boolDom>
-     * @throws InvalidConfigException if domain is invalid
-     */
-    private boolean boolDom(String domain) throws InvalidConfigException{
-        //<boolDom>::= <boolVal> "~" <boolVal> | <numArray>
-        if (domain.contains("~")){
-            int tildeIndex = domain.indexOf("~");
-            if (boolVal(domain.substring(0, tildeIndex)) && boolVal(domain.substring(tildeIndex + 1))){
-                return true;
-            }
-            else {
-                throw new InvalidConfigException("invalid boolean exhaustive domain");
-            }
-        }
-        else if (numArray(domain, "bool")){
-            return true;
-        }
-        else {
-            throw new InvalidConfigException("invalid boolean exhaustive domain");
-        }
-    }
-
 
     /**
      * Helper function for intDom, floatDom, and boolDom that checks if it's a valid numArray
@@ -517,7 +429,7 @@ public class ConfigFileParser{
                 }
                 domList = temp_floatDom;
                 for (Number num: domList){
-                    if (!floatVal(num.toString())) throw new InvalidConfigException("invalid domain type");
+//                    if (!floatVal(num.toString())) throw new InvalidConfigException("invalid domain type");
                 }
                 if (domainType.equals("exhaustive")){
                     typesNodes.setExDomain(domList);
